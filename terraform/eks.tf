@@ -2,28 +2,79 @@ module "eks"{
     source = "terraform-aws-modules/eks/aws"
     #version = "17.1.0"
     version = "18.28.0"
+
     cluster_name = local.cluster_name
     cluster_version = "1.20"
-    subnets = module.vpc.private_subnets
+
+    vpc_id = module.vpc.vpc_id
+    subnet_ids = module.vpc.private_subnets
+    control_plane_subnet_ids = module.vpc.intra_subnets
     tags = {
         Name = "Demo-EKS-Cluster"
     }
-    vpc_id = module.vpc.vpc_id
-    workers_group_defaults = {
-        root_volume_type = "gp2"
+
+    cluster_addons = {
+        coredns = {
+            resolve_conflicts = "OVERWRITE"
+        }
+        kube-proxy = {}
+        vpc-cni = {
+            resolve_conflicts = "OVERWRITE"
+        }
     }
-    workers_group = [
-        {
-            name = "Worker-Group-1"
-            instance_type = "t2.micro"
-            asg_desired_capacity = 2
-            additional_security_group_ids = [aws_security_group.worker_group_mgmt_one.id]
-        },
-        {
-            name = "Worker-Group-2"
-            instance_type = "t2.micro"
-            asg_desired_capacity = 1
-            additional_security_group_ids = [aws_security_group.worker_group_mgmt_two.id]
-        },
-    ]
+
+    self_managed_node_group_defaults = {
+        vpc_security_group_ids       = [aws_security_group.all_nodes_mgmt.id]
+        iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    }
+
+    self_managed_node_groups = {
+    spot = {
+        instance_type = "t2.micro"
+        instance_market_options = {
+            market_type = "spot"
+        }
+
+        bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+
+        post_bootstrap_user_data = <<-EOT
+        cd /tmp
+        sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+        sudo systemctl enable amazon-ssm-agent
+        sudo systemctl start amazon-ssm-agent
+        EOT
+        }
+    }
+
+    eks_managed_node_group_defaults = {
+        ami_type       = "AL2_x86_64"
+        instance_types = ["t2.micro", "t2.large"]
+
+        attach_cluster_primary_security_group = true
+        vpc_security_group_ids                = [aws_security_group.all_nodes_mgmt.id]
+    }
+
+    eks_managed_node_groups = {
+        blue = {}
+        green = {
+        min_size     = 1
+        max_size     = 5
+        desired_size = 1
+
+        instance_types = ["t3.large"]
+        capacity_type  = "SPOT"
+
+        tags = {
+            ExtraTag = "example"
+        }
+        }
+    }
+
+    cluster_identity_providers = {
+        sts = {
+            client_id = "sts.amazonaws.com"
+        }
+    }
+
+    manage_aws_auth_configmap = true
 }
