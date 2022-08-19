@@ -70,11 +70,11 @@ module "eks"{
         }
     }
 
-    cluster_identity_providers = {
-        sts = {
-            client_id = "sts.amazonaws.com"
-        }
-    }
+    # cluster_identity_providers = {
+    #     sts = {
+    #         client_id = "sts.amazonaws.com"
+    #     }
+    # }
 
     manage_aws_auth_configmap = true
 }
