@@ -87,7 +87,7 @@ module "eks"{
         {
         userarn  = "arn:aws:iam::453007554281:user/deiverk"
         username = "deiverk"
-        groups   = ["system:Administrator"]
+        groups   = ["Administrator"]
         },
     ]
 
