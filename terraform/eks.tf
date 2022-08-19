@@ -1,6 +1,5 @@
 module "eks"{
     source = "terraform-aws-modules/eks/aws"
-    #version = "17.1.0"
     version = "18.28.0"
 
     cluster_name = local.cluster_name
@@ -22,29 +21,6 @@ module "eks"{
             resolve_conflicts = "OVERWRITE"
         }
     }
-
-    # self_managed_node_group_defaults = {
-    #     vpc_security_group_ids       = [aws_security_group.all_nodes_mgmt.id]
-    #     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
-    # }
-
-    # self_managed_node_groups = {
-    # spot = {
-    #     instance_type = "t2.micro"
-    #     instance_market_options = {
-    #         market_type = "spot"
-    #     }
-
-    #     bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-
-    #     post_bootstrap_user_data = <<-EOT
-    #     cd /tmp
-    #     sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-    #     sudo systemctl enable amazon-ssm-agent
-    #     sudo systemctl start amazon-ssm-agent
-    #     EOT
-    #     }
-    # }
 
     eks_managed_node_group_defaults = {
         ami_type       = "AL2_x86_64"
@@ -70,13 +46,6 @@ module "eks"{
         }
     }
 
-    # cluster_identity_providers = {
-    #     sts = {
-    #         client_id = "sts.amazonaws.com"
-    #     }
-    # }
-
-    #create_aws_auth_configmap = true
     manage_aws_auth_configmap = true
 
     aws_auth_users = [
