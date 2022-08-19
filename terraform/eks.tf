@@ -82,12 +82,12 @@ module "eks"{
         {
         userarn  = "arn:aws:iam::453007554281:user/terraform-user"
         username = "terraform-user"
-        groups   = ["system:Administrator"]
+        groups   = ["system:masters"]
         },
         {
         userarn  = "arn:aws:iam::453007554281:user/deiverk"
         username = "deiverk"
-        groups   = ["Administrator"]
+        groups   = ["system:masters"]
         },
     ]
 
