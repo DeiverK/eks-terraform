@@ -84,6 +84,11 @@ module "eks"{
         username = "terraform-user"
         groups   = ["system:Administrator"]
         },
+        {
+        userarn  = "arn:aws:iam::453007554281:user/deiverk"
+        username = "deiverk"
+        groups   = ["system:Administrator"]
+        },
     ]
 
     aws_auth_accounts = [
