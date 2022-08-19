@@ -9,7 +9,7 @@ module vpc {
     public_subnets =  ["10.0.110.0/24", "10.0.120.0/24", "10.0.130.0/24"]
     enable_nat_gateway = true
     single_nat_gateway = true
-    enable_dns_hostname = true
+    enable_dns_hostnames = true
     tags = {
         "Name" = "Demo-VPC"
     }
