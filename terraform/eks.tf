@@ -77,4 +77,22 @@ module "eks"{
     # }
 
     manage_aws_auth_configmap = true
+
+    aws_auth_node_iam_role_arns_non_windows = [
+        module.eks_managed_node_group.iam_role_arn,
+        module.self_managed_node_group.iam_role_arn,
+    ]
+
+    aws_auth_users = [
+        {
+        userarn  = "arn:aws:iam::453007554281:user/terraform-user"
+        username = "terraform-user"
+        groups   = ["system:masters"]
+        },
+    ]
+
+    aws_auth_accounts = [
+        "453007554281"
+    ]
+
 }
